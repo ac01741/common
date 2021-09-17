@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: common-digi
+  name: common-digi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: common-digi
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: common-digi
+    spec:
+     containers:
+      - image: nari3108/common-digi:latest
+        name: common-digi
+        resources: {}
+        env:
+         - name : NARA-MESSAGE
+           valueFrom:
+            configMapKeyRef:
+                  name : nara-message
+                  key: nara-message
+         - name : RESOUCE-PATH
+           valueFrom:
+            configMapKeyRef:
+                  name : nara-message
+                  key: resouce-path
+        volumeMounts:
+            - name: sensitive
+              mountPath: /opt/config
+              readOnly: true
+     volumes:
+        - name: sensitive
+          configMap:
+               name: sensitive-dev
+     
+status: {}

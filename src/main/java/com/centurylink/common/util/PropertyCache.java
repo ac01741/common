@@ -1,49 +1,56 @@
 package com.centurylink.common.util;
 
 import com.ctl.esec.crypto.PropertyEncryptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Enumeration;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+@Slf4j
 public final class PropertyCache {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
     private static final String SHOW_ERROR = "Key was not found";
     private static PropertyCache propertyCache;
-    private final Properties configProp = new Properties();
+    private static final Properties configProp = new Properties();
 
     private PropertyCache(String resourcePath, String fileName) {
         try {
-            LOGGER.info("Start Loading PropertyCache Data");
-            ResourceBundle resourceBundle = ResourceBundle.getBundle(fileName);
+            log.info("::Start Loading PropertyCache Data::");
             String fileNameWithType = fileName + ".properties";
             String resourceFilePath = resourcePath + fileNameWithType;
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(fileName);
             PropertyEncryptor propEncryptor = new PropertyEncryptor(resourceFilePath);
+            log.info("Resource Path ::" + resourceFilePath);
             for (Enumeration<String> enumeration = resourceBundle.getKeys(); enumeration.hasMoreElements(); ) {
                 String key = enumeration.nextElement().trim();
-                LOGGER.info("readSensitiveResourceBundle. Found key = " + key);
+                log.info("readSensitiveResourceBundle. Found key :: " + key);
                 String value2 = propEncryptor.getSensitiveProperty(key, SHOW_ERROR);
                 configProp.put(key, value2);
             }
-            LOGGER.info("End Loading PropertyCache Data");
+            log.info("::End Loading PropertyCache Data::");
         } catch (final MissingResourceException mre) {
-            System.out.println("Error While Loading config file, File " + mre);
+            log.error("Error While Loading config file, File :: " + mre);
         } catch (final Exception ex) {
-            System.out.println("Error While Reading from config file, IOException:" + ex);
+            log.error("Error While Reading from config file, IOException:" + ex);
         }
     }
 
     public static synchronized PropertyCache getInstance(String resourcePath, String fileName) {
         if (null == propertyCache) {
-            propertyCache = new PropertyCache(resourcePath, fileName);
+            log.info("::getInstance method propertyCache null::");
+            propertyCache = new PropertyCache(resourcePath, "sensitive");
         }
         return propertyCache;
     }
 
-    public String getPropertyKeyValue(String key) {
+    public static String getPropertyKeyValue(String resourcePath,String key) {
+        log.info("getPropertyKeyValue ::"+key);
+        if (null == propertyCache) {
+            log.info("::getInstance method propertyCache null::");
+            propertyCache = new PropertyCache(resourcePath, "sensitive");
+        }
         return configProp.getProperty(key);
     }
 }

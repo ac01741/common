@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nara-message
+data:
+  nara-message: Welcome Kubernates Config Map Data Narayana Reddy
+  resouce-path: //opt//config//
