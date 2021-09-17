@@ -37,14 +37,6 @@ public final class PropertyCache {
         }
     }
 
-    public static synchronized PropertyCache getInstance(String resourcePath, String fileName) {
-        if (null == propertyCache) {
-            log.info("::getInstance method propertyCache null::");
-            propertyCache = new PropertyCache(resourcePath, "sensitive");
-        }
-        return propertyCache;
-    }
-
     public static String getPropertyKeyValue(String resourcePath,String key) {
         log.info("getPropertyKeyValue ::"+key);
         if (null == propertyCache) {
